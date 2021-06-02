@@ -24,18 +24,22 @@ public class CurrencyConversionControllerTest {
 
     @Test
     void shouldWork() {
+        BigDecimal amount = new BigDecimal(2);
+        String from = "EUR";
+        String to = "USD";
+
         ResponseEntity<ConversionResponseDTO> response = restTemplate.postForEntity(
             "/currency/convert",
-            new ConversionRequestDTO("USD", "EUR", new BigDecimal(2)),
+            new ConversionRequestDTO(from, to, amount),
             ConversionResponseDTO.class
         );
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody(), not(nullValue()));
-        assertThat(response.getBody().getFrom(), is("USD"));
-        assertThat(response.getBody().getTo(), is("EUR"));
-        assertThat(response.getBody().getAmount(), is(new BigDecimal(2)));
-        assertThat(response.getBody().getConverted(), is(new BigDecimal("23.23")));
+        assertThat(response.getBody().getFrom(), is(from));
+        assertThat(response.getBody().getTo(), is(to));
+        assertThat(response.getBody().getAmount(), is(amount));
+        assertThat(response.getBody().getConverted(), not(nullValue()));
     }
 
 }

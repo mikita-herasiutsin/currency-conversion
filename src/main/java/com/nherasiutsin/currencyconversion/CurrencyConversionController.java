@@ -1,5 +1,6 @@
 package com.nherasiutsin.currencyconversion;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,11 +10,13 @@ import reactor.core.publisher.Mono;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
-import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/currency")
 public class CurrencyConversionController {
+
+    @Autowired
+    private CurrencyService currencyService;
 
     @ApiIgnore
     @GetMapping("/")
@@ -23,7 +26,7 @@ public class CurrencyConversionController {
 
     @PostMapping("/convert")
     public Mono<ConversionResponseDTO> validateAddress(@RequestBody @Valid ConversionRequestDTO request) {
-        return Mono.just(new ConversionResponseDTO(request.getFrom(), request.getTo(), request.getAmount(), new BigDecimal("23.23")));
+        return currencyService.convert(request);
     }
 
 }
