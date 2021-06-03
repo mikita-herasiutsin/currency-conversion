@@ -13,6 +13,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 @ContextConfiguration
@@ -23,7 +25,7 @@ public class CurrencyConversionControllerTest {
     protected TestRestTemplate restTemplate;
 
     @Test
-    void shouldWork() {
+    public void happyPath() {
         BigDecimal amount = new BigDecimal(2);
         String from = "EUR";
         String to = "USD";
@@ -40,6 +42,30 @@ public class CurrencyConversionControllerTest {
         assertThat(response.getBody().getTo(), is(to));
         assertThat(response.getBody().getAmount(), is(amount));
         assertThat(response.getBody().getConverted(), not(nullValue()));
+    }
+
+    @Test
+    public void shouldReturnErrorMessageForInvalidInput() {
+        ResponseEntity<String> response = restTemplate.postForEntity(
+            "/currency/convert",
+            new ConversionRequestDTO("EUR", null, new BigDecimal(2)),
+            String.class
+        );
+
+        assertThat(response.getStatusCode(), is(BAD_REQUEST));
+        assertThat("Couldn't find validation error message", response.getBody().contains("from must not be empty"), is(true));
+    }
+
+    @Test
+    public void shouldReturnErrorMessageIfConversionFailed() {
+        ResponseEntity<String> response = restTemplate.postForEntity(
+            "/currency/convert",
+            new ConversionRequestDTO("23fds", "USD", new BigDecimal(2)),
+            String.class
+        );
+
+        assertThat(response.getStatusCode(), is(NOT_FOUND));
+        assertThat("Couldn't find validation error message", response.getBody().contains("There are no providers available"), is(true));
     }
 
 }

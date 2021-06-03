@@ -1,32 +1,32 @@
 package com.nherasiutsin.currencyconversion.providers;
 
 import com.nherasiutsin.currencyconversion.ConversionRequestDTO;
-import com.nherasiutsin.currencyconversion.ConversionResponseDTO;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 
-class CurrencyProvidersTest {
+public class CurrencyProvidersTest {
 
     @Test
-    void mainProviderShouldReturnRate() {
+    public void mainProviderShouldReturnRate() {
         callProvider(new MainCurrencyProvider());
     }
 
     @Test
-    void secondProviderShouldReturnRate() {
-        callProvider(new SecondCurrencyProvider());
+    public void secondProviderShouldReturnRate() {
+        callProvider(new SecondCurrencyProvider("c1c316469a43afdb3a3e03075d3b6fe8"));
     }
 
     private void callProvider(CurrencyProvider provider) {
-        ConversionResponseDTO result = provider.convert(new ConversionRequestDTO("EUR", "USD", new BigDecimal("47.65"))).block();
+        Map<String, String> result = provider.getRates(new ConversionRequestDTO("EUR", "USD", new BigDecimal("47.65"))).block();
 
-        assertThat(result, Matchers.not(nullValue()));
-        assertThat(result.getConverted(), Matchers.not(nullValue()));
+        assertThat(result, not(nullValue()));
+        assertThat(result.size(), not(0));
     }
 
 }

@@ -1,11 +1,12 @@
 package com.nherasiutsin.currencyconversion.providers;
 
 import com.nherasiutsin.currencyconversion.ConversionRequestDTO;
-import com.nherasiutsin.currencyconversion.ConversionResponseDTO;
 import reactor.core.publisher.Mono;
+
+import java.util.Map;
 
 public interface CurrencyProvider {
 
-    Mono<ConversionResponseDTO> convert(ConversionRequestDTO request);
+    Mono<Map<String, String>> getRates(ConversionRequestDTO request);
 
 }
